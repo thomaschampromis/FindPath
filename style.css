@@ -1,0 +1,28 @@
+.square {
+    border: solid 1px black;
+    padding: 3rem;
+}
+
+/* .wrapper {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    grid-auto-rows: 4rem;
+  } */
+
+.walls{
+    background-color: red;
+}
+.visited{
+    background-color: green;
+}
+
+.target{
+    background-color: gold !important;
+}
+
+.start{
+    background-color: black !important;
+    color: white;
+}
+  
+  
