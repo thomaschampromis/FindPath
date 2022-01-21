@@ -2,16 +2,16 @@ const wrapper = document.querySelector(".wrapper");
 let square = [];
 let row = [];
 
-let walls = ['07', '17', '27', '23','33' ,'43' , '53', '63', '73']
+let walls = [ '31', '33','32','34', '35', '36', '37' ]
 let case_wall = [];
 let goal = {
     'x' : 0,
-    'y' : 7, 
+    'y' : 5 , 
 }
 
 let start = {
-    'x' : 6,
-    'y' : 0 , 
+    'x' : 5,
+    'y' : 7 , 
 }
 createField(8, 10);
 
@@ -19,6 +19,12 @@ let counter= 0;
 
 
 array_rating= [];
+
+array_possible = [];
+
+all_case = document.querySelectorAll('.square');
+
+
 
 
 
@@ -45,11 +51,12 @@ function createField(rows, columns ){
     case_start = row[start['x']].children[start['y']];
     target = row[goal['x']].children[goal['y']];
     case_start.classList.add('start');
+    case_start.classList.add('visited');
     case_start.innerHTML = 0;  
     target.classList.add('target');
 }
 
-// CreateWalls();
+CreateWalls();
 function CreateWalls(){
     for (let y = 0; y < walls.length; y++) {
         case_wall[y] = document.getElementById(String(walls[y]));
@@ -63,39 +70,33 @@ function CreateWalls(){
 
 //    
     
-function FindFastestPath(x = false, y=false){
+function FindFastestPath(x = false, y=false, precedent_case){
 
            
             if(counter === 0 ){   
             x = start['x'];
             y = start['y'];
-            } 
-         
             
-            counter++;
-            console.log('recursion : ', counter)
-           
-            console.log(x);
-
-            case_start = row[x].children[y];
-            target = row[goal['x']].children[goal['y']];
-            console.log(case_start.id, target.id);
-            if (case_start.id === target.id){
+            diffX = (case_start.id[0] - target.id[0]);
+            diffY = (case_start.id[1] - target.id[1]);
+        } 
+        
+        counter++;
+        console.log('recursion : ', counter)
+        
+        console.log(x);
+        
+        case_start = row[x].children[y];
+        target = row[goal['x']].children[goal['y']];
+        console.log(case_start.id, target.id);
+        if (case_start.id === target.id){
                 return false;
             }
             
-            
             console.log(case_start);
-           
             console.log(target.id[0]);
-
-            diffX = (case_start.id[0] - target.id[0]);
-            diffY = (case_start.id[1] - target.id[1]);
-
             console.log([diffX, diffY]);
 
-
-          
             if(diffX >= 0){
                 vertical_priority = [up, down];
             }
@@ -110,7 +111,7 @@ function FindFastestPath(x = false, y=false){
                 horizontal_priority = [right, left];
             }
         
-        if (Math.abs(diffX) > Math.abs(diffY)){
+        if (Math.abs(diffX) >= Math.abs(diffY)){
         priority = [vertical_priority[0], horizontal_priority[0], horizontal_priority[1], vertical_priority[1]];
         }
         else{
@@ -119,20 +120,33 @@ function FindFastestPath(x = false, y=false){
         }
         
         console.log(priority);
-        array_possible = [];
-        array_score = [];
-        array_choose = [];
+   
             
         for (let e = 0; e < priority.length; e++) {
             next_case = priority[e](x,y);
             if (next_case != false){
-            break;
+                if(!next_case.classList.contains('walls') && !next_case.classList.contains('visited')){
+                    console.log('toto'); 
+                    break;
+                } 
+                else{
+                    continue
+                } 
+            }
+        else{
+          console.log(array_possible);
+          next_case = array_possible[array_possible.length-3]
+            }
         }
+        console.log(next_case);
+
+        if (next_case.classList.contains('visited')){
+            console.log('tata'); 
         }
-        console.log(parseInt(case_start.innerHTML));
         
         next_case.classList.add('visited');
-        next_case.innerHTML = (parseInt(case_start.innerHTML)) + 1;
+    
+        array_possible.push(next_case);
         
         console.log(next_case.id[0],next_case.id[1])
 
@@ -147,16 +161,9 @@ function FindFastestPath(x = false, y=false){
         console.log(x,y)
 
         
-        FindFastestPath(x, y)
+        FindFastestPath(x, y, case_start)
         
         }
-
-
-
-
-
-
-
 
 
 
@@ -164,7 +171,7 @@ function FindFastestPath(x = false, y=false){
         function up(x, y){
             if(x>0){
                 next_case = row[x - 1].children[y];
-                console.log(next_case);
+               
                 return next_case
             }
             else{
@@ -175,20 +182,18 @@ function FindFastestPath(x = false, y=false){
         function down(x, y){
             if (x < row.length -1){
             next_case = row[x+1].children[y];
-            console.log(next_case);
+           
             return next_case
         }
         else{
             return false;
         }
-
-
         }
 
         function left(x, y){
             if (y > 0){
             next_case = row[x].children[y-1];
-            console.log(next_case);
+          
             return next_case
         }
         else{
@@ -199,20 +204,46 @@ function FindFastestPath(x = false, y=false){
         function right(x, y){
             if (y < row[x].children.length -1){
             next_case = row[x].children[y+1];
-            console.log(next_case);
+           
             return next_case
         }
         else{
             return false;
         }
-
-
-
-
         }
 
         function CheckEmptyField(value){
             if(!value){
                 value = 0;
             }
+        }
+
+        function searchPrecedentCase(element){
+          
+        }
+
+// RateSquare()
+
+        function RateSquare(x, y){
+            if(counter === 0 ){   
+                x = start['x'];
+                y = start['y'];
+                
+                diffX = (case_start.id[0] - target.id[0]);
+                diffY = (case_start.id[1] - target.id[1]);
+            } 
+            
+            counter++;
+            console.log('recursion : ', counter)
+            
+            console.log(x);
+            
+            case_start = row[x].children[y];
+            target = row[goal['x']].children[goal['y']];
+            console.log(case_start);
+            console.log(target);
+
+            square.forEach(element => {
+                console.log(element);
+            });
         }
