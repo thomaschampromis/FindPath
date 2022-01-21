@@ -1,6 +1,6 @@
 .square {
     border: solid 1px black;
-    padding: 3rem;
+    padding: 2rem;
 }
 
 /* .wrapper {
@@ -21,8 +21,9 @@
 }
 
 .start{
-    background-color: black !important;
+    background-color: skyblue !important;
     color: white;
 }
+
   
   

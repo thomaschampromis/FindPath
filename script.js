@@ -2,18 +2,20 @@ const wrapper = document.querySelector(".wrapper");
 let square = [];
 let row = [];
 
-let walls = [12, 13, 14, 15, 22, 29, 28, 34]
+let walls = ['07', '17', '27', '23','33' ,'43' , '53', '63', '73']
+let case_wall = [];
 let goal = {
-    'x' : 3,
-    'y' : 4, 
+    'x' : 0,
+    'y' : 7, 
 }
 
 let start = {
-    'x' : 0,
-    'y' : 9, 
+    'x' : 6,
+    'y' : 0 , 
 }
 createField(8, 10);
 
+let counter= 0;
 
 
 array_rating= [];
@@ -34,142 +36,183 @@ function createField(rows, columns ){
             square[x].classList.add('square');
             square[x].id = j + ''+ (x);
             row[j].append(square[x]);
-            for (let y = 0; y < walls.length; y++) {
-                // if (walls[y] == x){
-                //     square[x].classList.add('walls');
-                // }
-                
-            }
+          
             
         }
         wrapper.append(row[j]);
     }
     console.log(wrapper);
+    case_start = row[start['x']].children[start['y']];
+    target = row[goal['x']].children[goal['y']];
+    case_start.classList.add('start');
+    case_start.innerHTML = 0;  
+    target.classList.add('target');
+}
+
+// CreateWalls();
+function CreateWalls(){
+    for (let y = 0; y < walls.length; y++) {
+        case_wall[y] = document.getElementById(String(walls[y]));
+        console.log(case_wall[y]);
+        case_wall[y].classList.add('walls');
+         
+     }
 }
 
 
 
+//    
+    
+function FindFastestPath(x = false, y=false){
 
-    function RateQuad(){
-
-
-        x = goal['x']
-        y = goal['y']
-        
-        target = row[x].children[y];
-        target.classList.add('target');
-
-        
-        begin = row[start['x']].children[start['y']];
-        begin.classList.add('start');
-        // console.log(target);
-        // console.log(array_rating)
-        
-        console.log(row[x]);
-        for (let i = 0; i < row[x].children.length; i++) {
-            // console.log(row[x].children[i]);
-            row[x].children[i].innerHTML = Math.abs(y - (i));
-            array_rating.push(Math.abs(y - (i)));            
-        }
-
-        for (let j = 0; j < row.length; j++) {
-        //    console.log(row[j]);
-           stepToAdd = Math.abs(x - j);
-            for (let k = 0; k < row[j].children.length; k++) {
-
-            // console.log(row[j].children[k]);
-            // console.log(array_rating[k] + stepToAdd)
-            row[j].children[k].innerHTML = array_rating[k] + stepToAdd;
+           
+            if(counter === 0 ){   
+            x = start['x'];
+            y = start['y'];
+            } 
+         
             
+            counter++;
+            console.log('recursion : ', counter)
+           
+            console.log(x);
+
+            case_start = row[x].children[y];
+            target = row[goal['x']].children[goal['y']];
+            console.log(case_start.id, target.id);
+            if (case_start.id === target.id){
+                return false;
+            }
+            
+            
+            console.log(case_start);
+           
+            console.log(target.id[0]);
+
+            diffX = (case_start.id[0] - target.id[0]);
+            diffY = (case_start.id[1] - target.id[1]);
+
+            console.log([diffX, diffY]);
+
+
+          
+            if(diffX >= 0){
+                vertical_priority = [up, down];
+            }
+            else{
+                vertical_priority = [down, up];
             }
 
-
+            if(diffY >= 0){
+                horizontal_priority = [left, right];
+            }
+            else{
+                horizontal_priority = [right, left];
+            }
+        
+        if (Math.abs(diffX) > Math.abs(diffY)){
+        priority = [vertical_priority[0], horizontal_priority[0], horizontal_priority[1], vertical_priority[1]];
         }
-    }
+        else{
 
-RateQuad();
-findPath(start['x'], start['y'])
-
-    function findPath(x, y){
+        priority = [horizontal_priority[0], vertical_priority[0], vertical_priority[1], horizontal_priority[1]];
+        }
         
-        
+        console.log(priority);
         array_possible = [];
         array_score = [];
         array_choose = [];
-
-        case_start = row[x].children[y];
-        console.log(case_start);
-        if (x > 0){
-                    up = row[x - 1].children[y];
-                    // array_ngb.push(up);
-                    console.log(up);
-                    array_possible.push(up);
-                    array_score.push(parseInt(up.innerHTML));
-                    console.log(up);
-                }
-                
-                if (x < row.length -1){
-                    down = row[x+1].children[y];
-                    array_possible.push(down)
-                    array_score.push(parseInt(down.innerHTML))
-                    
-                    console.log(down);
-                }
             
-               if (y < row[x].children.length -1){
-                   right = row[x].children[y+1];
-                   array_possible.push(right);
-                   array_score.push(parseInt(right.innerHTML));
-                  
-                   console.log(right);
-                   
-                }
-            
-            if (y > 0){
-                    left = row[x].children[y-1];
-                    array_possible.push(left)
-                    array_score.push(parseInt(left.innerHTML))
-                    
-                    console.log(left);
-                    
-                 } 
-
-            console.log(array_score);
-            min_score = Math.min(...array_score); 
-            console.log(min_score);
-            desired_case = array_possible[array_score.indexOf(min_score)];
-            console.log(desired_case);
-            desired_case.classList.add('visited');
-
-            // var indexes = getAllIndexes(array_score, min_score);
-            // console.log(indexes);
-            // console.log(array_possible);
-            // for (let i = 0; i < indexes.length; i++) {
-            //     console.log(parseInt(array_possible[indexes[i]].id));
-            //     array_possible[indexes[i]]
-               
-            // }
-
-            
-            if(min_score === 0) {
-                console.log('toto');
-            }
-            else {
-
-                findPath(parseInt(desired_case.id[0]), parseInt(desired_case.id[1]))
-            }
-
-
-            
-            
-            
-            
+        for (let e = 0; e < priority.length; e++) {
+            next_case = priority[e](x,y);
+            if (next_case != false){
+            break;
         }
+        }
+        console.log(parseInt(case_start.innerHTML));
         
-        function getAllIndexes(arr, val) {
-            var indexes = [], i = -1;
-            while ((i = arr.indexOf(val, i+1)) != -1){
-                indexes.push(i);
+        next_case.classList.add('visited');
+        next_case.innerHTML = (parseInt(case_start.innerHTML)) + 1;
+        
+        console.log(next_case.id[0],next_case.id[1])
+
+        x = parseInt(next_case.id[0])
+        y = parseInt(next_case.id[1])
+
+        
+        
+        CheckEmptyField(x);
+        CheckEmptyField(y);
+
+        console.log(x,y)
+
+        
+        FindFastestPath(x, y)
+        
+        }
+
+
+
+
+
+
+
+
+
+
+
+        function up(x, y){
+            if(x>0){
+                next_case = row[x - 1].children[y];
+                console.log(next_case);
+                return next_case
             }
-            return indexes;
+            else{
+                return false;
             }
+        }
+
+        function down(x, y){
+            if (x < row.length -1){
+            next_case = row[x+1].children[y];
+            console.log(next_case);
+            return next_case
+        }
+        else{
+            return false;
+        }
+
+
+        }
+
+        function left(x, y){
+            if (y > 0){
+            next_case = row[x].children[y-1];
+            console.log(next_case);
+            return next_case
+        }
+        else{
+            return false;
+        }
+        }
+
+        function right(x, y){
+            if (y < row[x].children.length -1){
+            next_case = row[x].children[y+1];
+            console.log(next_case);
+            return next_case
+        }
+        else{
+            return false;
+        }
+
+
+
+
+        }
+
+        function CheckEmptyField(value){
+            if(!value){
+                value = 0;
+            }
+        }
